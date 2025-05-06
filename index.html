@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Little Chefs</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cal+Sans&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cal Sans', sans-serif;
+        }
+
+        /* Header Styles */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: #5C4033;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #FFB07F;
+            letter-spacing: 1.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #FFD700;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #FFB07F;
+            text-decoration: underline;
+        }
+
+        /* Page Sections */
+        .page-section {
+            display: none;
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page-section.active {
+            display: block;
+        }
+
+        /* Our Story Section */
+        .story-content {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .story-content h1 {
+            color: #5C4033;
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .story-card {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .story-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .story-card h2 {
+            color: #FFB07F;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Menu Section */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        .menu-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .menu-card h3 {
+            color: #5C4033;
+            margin-bottom: 0.5rem;
+        }
+
+        .menu-card p {
+            color: #666;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .price {
+            color: #4CAF50;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .add-to-cart {
+            background: #FFB07F;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .add-to-cart:hover {
+            background: #FF9800;
+        }
+
+        /* Cart Styles */
+        .cart-container {
+            position: fixed;
+            bottom: 18px;
+            right: 30px;
+            z-index: 1000;
+        }
+
+        .cart-icon {
+            background: #FFD700;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .cart-icon-image {
+            width: 32px;
+            height: 32px;
+            filter: invert(0%);
+            transition: transform 0.3s ease;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #FF5722;
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+
+        .cart-modal {
+            position: fixed;
+            bottom: 88px;
+            right: 30px;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            width: 350px;
+            display: none;
+            z-index: 1001;
+        }
+
+        .cart-modal.active {
+            display: block;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .quantity-controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-top: 0.5rem;
+        }
+
+        .quantity-btn {
+            background: #FFB07F;
+            color: white;
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .remove-btn {
+            background: #ff5722;
+            color: white;
+            border: none;
+            padding: 2px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .total-price {
+            font-weight: bold;
+            margin-top: 1rem;
+            text-align: right;
+        }
+
+        .order-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        body {
+            background-color: #f5f5f5;
+        }
+
+        .attribution {
+            font-size: 0.8rem;
+            color: #FFB07F;
+            text-align: center;
+            padding: 0.5rem;
+        }
+
+        .attribution a {
+            color: #FFD700;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">Little Chefs</div>
+        <nav class="nav-links">
+            <a data-page="our-story" class="active">Our Story</a>
+            <a data-page="menu">Menu</a>
+            <a data-page="active-days">Active Days</a>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Our Story Section -->
+        <section id="our-story" class="page-section active">
+            <div class="story-content">
+                <h1>Our Story</h1>
+                <p>Little Chefs was born from the culinary dreams of a brother-sister duo, aged 10 and 13. With a passion for cooking and serving others, we've created a warm, family-friendly space where everyone can enjoy delicious meals made with love.</p>
+            </div>
+
+            <div class="cards-container">
+                <div class="story-card">
+                    <h2>Our Mission</h2>
+                    <p>To create a welcoming space where families can enjoy quality meals while supporting young entrepreneurship in our community.</p>
+                </div>
+
+                <div class="story-card">
+                    <h2>Our Team</h2>
+                    <p>It is run by a dynamic brother-sister duo, with our talented brother as the head chef and our creative older sister managing service. They bring fresh energy to every dish we serve.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Menu Section -->
+        <section id="menu" class="page-section">
+            <div class="menu-grid">
+                <!-- Menu items... -->
+                <div class="menu-card">
+                    <h3>Breadizza</h3>
+                    <p>Freshly baked bread pizza with signature sauce and toppings</p>
+                    <div class="price">₹40</div>
+                    <button class="add-to-cart" onclick="addToCart('Breadizza', 40)">Add to Cart</button>
+                </div>
+
+                <div class="menu-card">
+                    <h3>Strawberry Dream Delight</h3>
+                    <p>Layered strawberry dessert with cream and fresh berries</p>
+                    <div class="price">₹130</div>
+                    <button class="add-to-cart" onclick="addToCart('Strawberry Dream Delight', 130)">Add to Cart</button>
+                </div>
+
+                <div class="menu-card">
+                    <h3>Kit-Kat Krunch Delight</h3>
+                    <p>Chocolate paradise with Kit-Kat chunks and chocolate sauce</p>
+                    <div class="price">₹140</div>
+                    <button class="add-to-cart" onclick="addToCart('Kit-Kat Krunch Delight', 140)">Add to Cart</button>
+                </div>
+
+                <div class="menu-card">
+                    <h3>Cookies & Kream Delight Shake</h3>
+                    <p>Thick cookies-and-cream milkshake with whipped cream</p>
+                    <div class="price">₹130</div>
+                    <button class="add-to-cart" onclick="addToCart('Cookies & Kream Delight Shake', 130)">Add to Cart</button>
+                </div>
+
+                <div class="menu-card">
+                    <h3>Nutties Bliss Shake</h3>
+                    <p>Nutella-based shake with mixed nuts and chocolate drizzle</p>
+                    <div class="price">₹110</div>
+                    <button class="add-to-cart" onclick="addToCart('Nutties Bliss Shake', 110)">Add to Cart</button>
+                </div>
+
+                <div class="menu-card">
+                    <h3>Green Power Refresher</h3>
+                    <p>Healthy green juice with spinach, apple, and ginger</p>
+                    <div class="price">₹80</div>
+                    <button class="add-to-cart" onclick="addToCart('Green Power Refresher', 80)">Add to Cart</button>
+                </div>
+
+                <div class="menu-card">
+                    <h3>Citrus Breeze</h3>
+                    <p>Refreshing mix of orange, lemon, and mint</p>
+                    <div class="price">₹60</div>
+                    <button class="add-to-cart" onclick="addToCart('Citrus Breeze', 60)">Add to Cart</button>
+                </div>
+
+                <div class="menu-card">
+                    <h3>Chill Brew</h3>
+                    <p>Iced coffee with vanilla flavoring</p>
+                    <div class="price">₹60</div>
+                    <button class="add-to-cart" onclick="addToCart('Chill Brew', 60)">Add to Cart</button>
+                </div>
+
+                <div class="menu-card">
+                    <h3>Sleepless Nights</h3>
+                    <p>Strong cold brew coffee with chocolate shavings</p>
+                    <div class="price">₹80</div>
+                    <button class="add-to-cart" onclick="addToCart('Sleepless Nights', 80)">Add to Cart</button>
+                </div>
+
+                <div class="menu-card">
+                    <h3>Garlic Burst</h3>
+                    <p>Garlic bread sticks with cheesy dip</p>
+                    <div class="price">₹60</div>
+                    <button class="add-to-cart" onclick="addToCart('Garlic Burst', 60)">Add to Cart</button>
+                </div>
+
+                <div class="menu-card">
+                    <h3>Fruit Salad</h3>
+                    <p>Seasonal fruits with honey yogurt dressing</p>
+                    <div class="price">₹100</div>
+                    <button class="add-to-cart" onclick="addToCart('Fruit Salad', 100)">Add to Cart</button>
+                </div>
+
+                <div class="menu-card">
+                    <h3>Oreo Pudding</h3>
+                    <p>Layered Oreo dessert with chocolate pudding</p>
+                    <div class="price">₹120</div>
+                    <button class="add-to-cart" onclick="addToCart('Oreo Pudding', 120)">Add to Cart</button>
+            </div>
+        </section>
+
+        <!-- Active Days Section -->
+        <section id="active-days" class="page-section">
+            <div class="story-content">
+                <h1>Active Days & Hours</h1>
+                <div class="cards-container">
+                    <div class="story-card">
+                        <h2>Weekend Schedule</h2>
+                        <p>Saturday: 12:00 PM - 6:00 PM</p>
+                        <p>Sunday: 12:00 PM - 6:00 PM</p>
+                        <div style="margin-top: 15px; color: #4CAF50; font-weight: bold;">
+                            🕒 We're closed on weekdays
+                        </div>
+                    </div>
+                    <div class="story-card">
+                        <h2>Special Notes</h2>
+                        <p>• Closed on national holidays</p>
+                        <p>• Extended hours during festivals</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Cart Elements -->
+    <div class="cart-container">
+        <div class="cart-icon" onclick="toggleCart()">
+            <img src="images/shopping-cart.png" 
+                 alt="Cart" 
+                 class="cart-icon-image">
+            <div class="cart-count" id="cartCount">0</div>
+        </div>
+        <div class="cart-modal" id="cartModal">
+            <div id="cartItems"></div>
+            <div class="total-price">Total: ₹<span id="cartTotal">0.00</span></div>
+            <button class="order-btn" onclick="sendOrder()">Place Order</button>
+        </div>
+    </div>
+
+    <footer>
+        <p style="text-align: center; padding: 1rem; background-color: #5C4033; color: #FFB07F;">
+            &copy; 2025 Little Chefs
+        </p>
+        <div class="attribution">
+            Icons by <a href="https://www.flaticon.com/authors/freepik" target="_blank">Freepik</a>
+        </div>
+    </footer>
+
+    <script>
+        // Navigation handling
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const page = e.target.dataset.page;
+                
+                document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+                document.querySelectorAll('.page-section').forEach(section => section.classList.remove('active'));
+                
+                e.target.classList.add('active');
+                document.getElementById(page).classList.add('active');
+                history.pushState(null, null, `#${page}`);
+            });
+        });
+
+        // Initial page load
+        window.addEventListener('load', () => {
+            const hash = window.location.hash.substring(1);
+            const validPages = ['our-story', 'menu', 'active-days'];
+            const defaultPage = validPages.includes(hash) ? hash : 'our-story';
+            
+            document.querySelector(`[data-page="${defaultPage}"]`).classList.add('active');
+            document.getElementById(defaultPage).classList.add('active');
+        });
+
+        // Cart functionality
+        let cart = [];
+        
+        function addToCart(itemName, price) {
+            const existingItem = cart.find(item => item.name === itemName);
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({ name: itemName, price: price, quantity: 1 });
+            }
+            updateCartDisplay();
+        }
+
+        function adjustQuantity(index, change) {
+            cart[index].quantity += change;
+            if (cart[index].quantity < 1) {
+                cart.splice(index, 1);
+            }
+            updateCartDisplay();
+        }
+
+        function removeItem(index) {
+            cart.splice(index, 1);
+            updateCartDisplay();
+        }
+
+        function updateCartDisplay() {
+            const cartItems = document.getElementById('cartItems');
+            const cartCount = document.getElementById('cartCount');
+            const cartTotal = document.getElementById('cartTotal');
+            
+            if (cartItems && cartCount && cartTotal) {
+                cartItems.innerHTML = '';
+                let total = 0;
+                
+                cart.forEach((item, index) => {
+                    total += item.price * item.quantity;
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'cart-item';
+                    itemDiv.innerHTML = `
+                        <div style="flex-grow: 1;">
+                            <div>${item.name}</div>
+                            <div class="quantity-controls">
+                                <button class="quantity-btn" onclick="adjustQuantity(${index}, -1)">-</button>
+                                <span>${item.quantity}</span>
+                                <button class="quantity-btn" onclick="adjustQuantity(${index}, 1)">+</button>
+                                <button class="remove-btn" onclick="removeItem(${index})">Remove</button>
+                            </div>
+                        </div>
+                        <div>₹${(item.price * item.quantity).toFixed(2)}</div>
+                    `;
+                    cartItems.appendChild(itemDiv);
+                });
+
+                cartCount.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
+                cartTotal.textContent = total.toFixed(2);
+            }
+        }
+
+        function toggleCart() {
+            const cartModal = document.getElementById('cartModal');
+            if (cartModal) {
+                cartModal.classList.toggle('active');
+            }
+        }
+
+        function sendOrder() {
+            const orderDetails = cart.map(item => 
+                `${item.quantity}x ${item.name} - ₹${(item.price * item.quantity).toFixed(2)}`
+            ).join('\n');
+
+            const subject = encodeURIComponent('Little Chefs Order');
+            const body = encodeURIComponent(
+                `Order Details:\n${orderDetails}\n\nTotal: ₹${document.getElementById('cartTotal').textContent}`
+            );
+
+            window.open(`mailto:lumerskywalker@gmail.com?subject=${subject}&body=${body}`, '_blank');
+            
+            cart = [];
+            updateCartDisplay();
+            toggleCart();
+        }
+
+    </script>
+</body>
+</html>
